@@ -1,0 +1,66 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+
+@TeleOp(name = "TeleOpExample", group = "TeleOp")
+public class TeleOpExample extends LinearOpMode {
+
+    private DcMotor leftMotor;
+    private DcMotor rightMotor;
+    private DcMotor linearLiftMotor;
+    private Servo grabberServo;
+
+    @Override
+    public void runOpMode() {
+
+        // Initialize motors
+        leftMotor = hardwareMap.dcMotor.get("leftMotor");
+        rightMotor = hardwareMap.dcMotor.get("rightMotor");
+        linearLiftMotor = hardwareMap.dcMotor.get("linearLiftMotor");
+        
+        // Initialize servo
+        grabberServo = hardwareMap.servo.get("grabberServo");
+
+        // Set motor directions
+        leftMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightMotor.setDirection(DcMotor.Direction.FORWARD);
+        linearLiftMotor.setDirection(DcMotor.Direction.FORWARD);
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+
+            // Driver control for drive motors
+            double power = gamepad1.left_stick_y;
+            double turn = gamepad1.right_stick_x;
+
+            double leftPower = power + turn;
+            double rightPower = power - turn;
+
+            // Set drive motor powers
+            leftMotor.setPower(leftPower);
+            rightMotor.setPower(rightPower);
+
+            // Driver control for linear lift motor
+            double liftPower = gamepad2.left_stick_y;
+            linearLiftMotor.setPower(liftPower);
+
+            // Driver control for grabber servo
+            if (gamepad2.a) {
+                grabberServo.setPosition(0.8); // Adjust the position as needed
+            } else {
+                grabberServo.setPosition(0.2); // Adjust the position as needed
+            }
+
+            // Telemetry for debugging
+            telemetry.addData("Left Power", leftPower);
+            telemetry.addData("Right Power", rightPower);
+            telemetry.addData("Linear Lift Power", liftPower);
+            telemetry.addData("Grabber Servo Position", grabberServo.getPosition());
+            telemetry.update();
+        }
+    }
+}
